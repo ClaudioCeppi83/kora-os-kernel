@@ -29,14 +29,23 @@ struct SystemMetrics {
     timestamp: String,
 }
 
+/// Global application state managed by Tauri and accessed by commands.
 pub struct AppState {
+    /// Terminal pseudo-terminal manager.
     pub pty: PtyManager,
+    /// Flag to block bridge communication during sensitive operations.
     pub bridge_locked: Arc<AtomicBool>,
+    /// SQLite database connection pool (sqlx).
     pub db: Pool<Sqlite>,
+    /// AI Engine instance for OpenClaw orchestrations.
     pub ai_engine: OpenClawEngine,
+    /// Administrative governance manager for agencies.
     pub governance: AgencyManager,
+    /// Secure vault for ephemeral keys and sensitive data.
     pub vault: SecretVault,
+    /// Thread-safe cache for kernel integrity hashes.
     pub integrity_cache: Arc<RwLock<Option<String>>>,
+    /// Timestamp recorded at kernel initialization.
     pub boot_time: std::time::Instant,
 }
 
@@ -57,6 +66,7 @@ impl AppState {
     }
 }
 
+/// Returns true if the kernel state is accessible, indicating a successful cold start.
 #[tauri::command]
 fn kora_kernel_status(state: State<'_, AppState>) -> bool {
     // If we can access state, the kernel has been initialized
@@ -126,6 +136,7 @@ async fn kora_kernel_integrity(state: State<'_, AppState>) -> Result<String, Str
 }
 
 
+/// Executes a high-performance benchmark measuring boot latency, RAM usage, and DB responsiveness.
 #[tauri::command]
 async fn kora_system_benchmark(state: State<'_, AppState>) -> Result<serde_json::Value, String> {
     let boot_elapsed = state.boot_time.elapsed().as_millis();

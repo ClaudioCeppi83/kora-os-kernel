@@ -4,13 +4,18 @@ use serde::{Serialize, Deserialize};
 use crate::AppState;
 use crate::audit;
 
+/// Represents an administrative agency within KORA OS.
 #[derive(Clone, Serialize, Deserialize, Debug, sqlx::FromRow)]
 pub struct Agency {
+    /// The unique agency identifier (e.g., 'SYSTEM', 'RED_TEAM').
     pub id: String,
+    /// Human-readable name of the agency.
     pub name: String,
+    /// ISO-8601 creation timestamp.
     pub created_at: String,
 }
 
+/// Manages the active agency context and handles secure switching between agencies.
 #[derive(Clone)]
 pub struct AgencyManager {
     active_agency_id: Arc<RwLock<String>>,
@@ -32,6 +37,10 @@ impl AgencyManager {
     // Commands implementation logic is separated to keep this struct clean if needed, 
     // but for now we put helpers here.
 
+    /// Switches the active system context to a different agency.
+    ///
+    /// This is a high-security operation that locks the communication bridge,
+    /// notifies the UI, and updates the global agency state.
     pub async fn switch_agency(&self, app_state: &tauri::State<'_, AppState>, new_agency_id: String) -> Result<String, String> {
         // 1. Security Protocol: Lock Bridge immediately
         app_state.bridge_locked.store(true, std::sync::atomic::Ordering::SeqCst);

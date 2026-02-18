@@ -8,6 +8,10 @@ use memmap2::Mmap;
 const CHUNK_SIZE: usize = 50 * 1024; // 50KB
 const OVERLAP_SIZE: usize = 5 * 1024; // 10% overlap (5KB)
 
+/// Indexes a file into the RAG system using Zero-Copy memory mapping.
+///
+/// Computes a streaming SHA-256 hash and stores metadata (offsets) in the database
+/// to allow high-performance retrieval without memory bloat.
 pub async fn index_file(pool: &Pool<Sqlite>, file_path: &str) -> Result<String, String> {
     let path = Path::new(file_path);
     if !path.exists() {

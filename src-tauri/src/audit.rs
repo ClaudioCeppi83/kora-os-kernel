@@ -12,15 +12,24 @@ lazy_static! {
     static ref RE_PHONE: Regex = Regex::new(r"\+?[\d\s-]{10,15}").unwrap();
 }
 
+/// Represents an immutable audit log entry in the security chain.
 #[derive(Serialize, Deserialize, Debug, sqlx::FromRow)]
 pub struct AuditLog {
+    /// Unique identifier for the log entry.
     pub id: String,
+    /// SHA-256 hash of the previous log entry in the chain.
     pub prev_hash: String,
+    /// SHA-256 hash representing the current state of this entry and the chain.
     pub curr_hash: String,
+    /// The system or user action performed.
     pub action: String,
+    /// The security ring or user level associated with the action.
     pub user: String,
+    /// Redacted metadata or event details.
     pub metadata: String,
+    /// ISO-8601 timestamp of the event.
     pub timestamp: String,
+    /// The agency context in which the event occurred.
     pub agency_id: String,
 }
 
@@ -34,6 +43,9 @@ pub fn scrub_pii(text: &str) -> String {
     scrubbed
 }
 
+/// Records a security event in the immutable audit log chain.
+///
+/// Automatically scrubs PII from metadata and computes the next SHA-256 hash link.
 pub async fn log_event(
     pool: &Pool<Sqlite>,
     action: &str,
@@ -96,6 +108,10 @@ pub async fn log_event(
     Ok(curr_hash)
 }
 
+/// Validates the integrity of the entire audit log chain.
+///
+/// Iteratively recomputes hashes and verifies that each entry correctly links to its predecessor.
+/// Returns the latest block hash if valid, or None if a breach is detected.
 pub async fn validate_chain(pool: &Pool<Sqlite>) -> Result<Option<String>, String> {
     let logs: Vec<AuditLog> = sqlx::query_as::<_, AuditLog>(
         "SELECT id, prev_hash, curr_hash, action, user, metadata, timestamp, agency_id FROM audit_logs ORDER BY timestamp ASC, id ASC"

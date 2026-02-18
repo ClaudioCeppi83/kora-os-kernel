@@ -14,13 +14,18 @@
 
   export let isLocked = false;
 
+  /**
+   * REACTIVE BRIDGE LOCK
+   * Automatically updates terminal visual state (cursor color, focus)
+   * based on the parent's `isLocked` state.
+   */
   $: if (term) {
     if (isLocked) {
-      term.options.theme = { ...term.options.theme, cursor: "#C23B22" };
+      term.options.theme = { ...term.options.theme, cursor: "#C23B22" }; // Red cursor on lock
       term.options.cursorStyle = "block";
-      term.blur();
+      term.blur(); // Remove focus to block input
     } else {
-      term.options.theme = { ...term.options.theme, cursor: "#D4B235" };
+      term.options.theme = { ...term.options.theme, cursor: "#D4B235" }; // Golden cursor on unlock
       term.options.cursorStyle = "block";
       term.focus();
     }
@@ -102,15 +107,15 @@
     term.onData((data) => {
       if (isLocked) return;
 
-      // Simple line buffering for command interception
+      // COMMAND INTERCEPTION (Ring 1 Logic)
+      // We intercept "kora" prefixed commands before they hit the PTY
       if (data === "\r") {
         const trimmed = currentLine.trim();
         if (trimmed.startsWith("kora ")) {
-          // Intercept KORA commands
-          term.write("\r\n"); // Echo newline locally
+          term.write("\r\n");
 
           const parts = trimmed.split(" ");
-          const cmd = parts[1]; // system or knowledge
+          const cmd = parts[1];
           const args = parts.slice(2).join(" ");
 
           if (cmd === "system") {

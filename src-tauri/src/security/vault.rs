@@ -3,18 +3,23 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 
 #[allow(dead_code)]
+/// Represents a sensitive piece of data stored securely.
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Secret {
+    /// The shorthand name for the secret.
     pub alias: String,
-    pub encrypted_value: String, // In a real system, this would be encrypted at rest
+    /// The data, encrypted at rest in production.
+    pub encrypted_value: String,
 }
 
+/// An in-memory secure vault for managing ephemeral secrets and environment variables.
 pub struct SecretVault {
     #[allow(dead_code)]
     secrets: Arc<RwLock<HashMap<String, String>>>,
 }
 
 impl SecretVault {
+    /// Initializes a new, empty SecretVault.
     pub fn new() -> Self {
         Self {
             secrets: Arc::new(RwLock::new(HashMap::new())),

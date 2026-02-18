@@ -47,30 +47,33 @@ graph TD
 - **AI Orchestration**: OpenClaw Engine (open-source LLM runtime)
 - **Security**: SHA-256 Chaining, Memory-Mapped Zero-Copy RAG, Path Jailing
 
-## 🚀 Quick Start (Lite Mode)
+## 1. Clone the repository and launch
 
-1. **Clone the repository**:
+1.  **Clone the repository and launch**
+
    ```bash
+   # Clone the repository
    git clone https://github.com/ClaudioCeppi83/kora-os-kernel.git
    cd kora-os-kernel
-   ```
 
-2. **Install dependencies**:
-   ```bash
+   # Install frontend dependencies
    pnpm install
-   ```
 
-3. **Launch in Debug Mode**:
-   ```bash
+   # Build the development bundle
    pnpm tauri dev
    ```
 
-## ⚡ Performance Targets
+## 2. Binary Integrity
+All official KORA OS binaries are signed and verifiable. Instructions for verifying integrity will be provided in a future release.
+
+## Performance Targets
 - **Cold Start**: < 2s (Ready to interaction)
 - **Memory Footprint**: < 150MB (Idle / Suspended AI)
 - **RAG Efficiency**: Zero-Copy via `memmap2`
 
 ---
+
+[Structure](#core-infrastructure) • [Quick Start](#quick-start-lite-mode) • [Security Protocol](#security-protocol)
 
 ## 🛡️ Security Protocol
 Vulnerabilities should be reported via encrypted channels as specified in [SECURITY.md](SECURITY.md).

@@ -2,19 +2,25 @@ use std::path::{Path, PathBuf};
 use tauri::State;
 use crate::AppState;
 
+/// Errors encountered during filesystem jail enforcement.
 #[derive(Debug)]
 #[allow(dead_code)]
 pub enum JailError {
+    /// Access to a path outside the whitelist was denied.
     AccessDenied(String),
+    /// The provided path is syntactically invalid or unreadable.
     InvalidPath(String),
+    /// A deliberate attempt to escape the jail via path traversal (..) was blocked.
     JailBreakAttempt(String),
 }
 
+/// A security jail that restricts filesystem access to a whitelist of allowed paths.
 pub struct KoraJail {
     whitelist: Vec<PathBuf>,
 }
 
 impl KoraJail {
+    /// Creates a new jail context for the specified agency.
     pub fn new(agency_id: &str) -> Self {
         // Dynamic whitelist based on Active Agency (Ring 1 Isolation)
         let whitelist = vec![
@@ -50,7 +56,10 @@ impl KoraJail {
     }
 }
 
-/// Helper to actively enforcement jail check and trigger Hard Reset on failure
+/// Actively enforces jail checks on a given path.
+///
+/// If a violation is detected, it logs a security event to the audit chain
+/// and locks the application bridge (Ring 0 Hard Reset).
 pub async fn enforce(state: &State<'_, AppState>, path: &str, operation: &str) -> Result<PathBuf, String> {
     // Get Active Agency from Ring 1 Governance
     let agency_id = state.governance.get_active_agency_id();

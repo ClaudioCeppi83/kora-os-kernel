@@ -3,6 +3,10 @@ use std::fs;
 use tauri::AppHandle;
 use tauri::Manager;
 
+/// Initializes the KORA Kernel database.
+///
+/// Resolves the app data directory, creates a connection pool with WAL mode enabled,
+/// and runs pending migrations.
 pub async fn init_db(app: &AppHandle) -> Result<Pool<Sqlite>, sqlx::Error> {
     // 1. Resolve path relative to app data dir
     let app_data_dir = app.path().app_data_dir().expect("failed to get app data dir");
@@ -33,14 +37,21 @@ pub async fn init_db(app: &AppHandle) -> Result<Pool<Sqlite>, sqlx::Error> {
     Ok(pool)
 }
 
+/// A captured snapshot of a session state, including context and response metadata.
 #[derive(sqlx::FromRow, Debug)]
 #[allow(dead_code)]
 pub struct SessionSnapshot {
+    /// Incremental row ID.
     pub id: i64,
+    /// Completion timestamp.
     pub timestamp: String,
+    /// The user input/command that triggered the snapshot.
     pub prompt: String,
+    /// Hash of the response for verification.
     pub response_hash: String,
+    /// Serialized context or state data.
     pub context_snapshot: String,
+    /// The agency owner of this session.
     pub agency_id: String,
 }
 

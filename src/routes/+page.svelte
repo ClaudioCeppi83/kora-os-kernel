@@ -11,14 +11,18 @@
 
   import { listen } from "@tauri-apps/api/event";
 
-  // State
-  let kernelReady = false;
-  let ecoMode = false;
-  let isLocked = false;
-  let securityStatus = "GREEN";
-  let status = { pulse: "FAIL", latency: 0 };
-  let showAudit = false;
-  let cpuUsage = 0;
+  /**
+   * REACTIVE STATE (Runes)
+   * These variables trigger UI updates when modified by either
+   * event listeners or proactive bridge polling.
+   */
+  let kernelReady = $state(false); // Controls the splash screen visibility
+  let ecoMode = $state(false); // Throttles expensive CSS effects when CPU > 80%
+  let isLocked = $state(false); // Blocks bridge communication when active
+  let securityStatus = $state("GREEN"); // System integrity indicator
+  let status = $state({ pulse: "FAIL", latency: 0 }); // Kernel heartbeat status
+  let showAudit = $state(false); // Controls the visibility of the audit log viewer
+  let cpuUsage = $state(0); // Raw CPU telemetry data
 
   onMount(() => {
     agencyStore.init();
