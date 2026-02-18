@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KORA OS Terminal Interface</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d4b235",
+                        "rust": "#C23B22",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#121212",
+                        "neutral-light": "#E6E6E6",
+                        "neutral-dark": "#1a1a1a",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #121212;
+            color: #E6E6E6;
+        }
+        .terminal-text {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(212, 178, 53, 0.03);
+            position: absolute;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 18px;
+            background-color: #d4b235;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+        .bento-border {
+            border: 1px solid rgba(212, 178, 53, 0.2);
+        }
+        .glow-green {
+            box-shadow: 0 0 8px #00ff00;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #433d28;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between h-10 px-6 border-b border-primary/20 bg-background-dark/80 backdrop-blur-sm z-20">
+<nav class="flex items-center gap-6">
+<a class="text-xs font-mono uppercase tracking-widest text-neutral-light/60 hover:text-primary transition-colors" href="#">File</a>
+<a class="text-xs font-mono uppercase tracking-widest text-neutral-light/60 hover:text-primary transition-colors" href="#">Tools</a>
+<a class="text-xs font-mono uppercase tracking-widest text-neutral-light/60 hover:text-primary transition-colors" href="#">Knowledge</a>
+<a class="text-xs font-mono uppercase tracking-widest text-neutral-light/60 hover:text-primary transition-colors" href="#">System</a>
+</nav>
+<div class="flex items-center gap-4">
+<span class="text-xs font-mono font-bold text-primary tracking-tighter">KORA OS v1.0</span>
+<div class="size-2 bg-primary rounded-full animate-pulse"></div>
+</div>
+</header>
+<!-- Main Workspace Container -->
+<main class="flex-1 flex gap-4 p-4 overflow-hidden">
+<!-- Left Panel: System & Files -->
+<aside class="w-80 flex flex-col gap-4 overflow-y-auto">
+<!-- System Monitor Bento -->
+<section class="flex flex-col gap-4 p-4 bento-border bg-neutral-dark/40 rounded shadow-sm">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">monitoring</span>
+<h2 class="text-xs font-mono font-bold uppercase tracking-widest text-neutral-light/80">System Monitor</h2>
+</div>
+<!-- CPU Graph -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-end">
+<span class="text-[10px] font-mono text-neutral-light/50">CPU UTILIZATION</span>
+<span class="text-xs font-mono text-primary">24.2%</span>
+</div>
+<div class="h-16 w-full relative overflow-hidden bg-background-dark/50 border border-primary/10">
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none">
+<path d="M0 64 L10 50 L20 55 L30 40 L40 45 L50 20 L60 30 L70 15 L80 40 L90 35 L100 50 L110 45 L120 60 L130 55 L140 40 L150 42 L160 30 L170 35 L180 20 L190 25 L200 40 L210 38 L220 50 L230 45 L240 60 L250 55 L260 40 L270 42 L280 30 L290 35 L300 64 Z" fill="rgba(212, 178, 53, 0.1)" stroke="#d4b235" stroke-width="1"></path>
+</svg>
+</div>
+</div>
+<!-- RAM Graph -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-end">
+<span class="text-[10px] font-mono text-neutral-light/50">RAM USAGE</span>
+<span class="text-xs font-mono text-primary">4.8 / 32GB</span>
+</div>
+<div class="h-16 w-full relative overflow-hidden bg-background-dark/50 border border-primary/10">
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none">
+<path d="M0 64 L20 60 L40 58 L60 59 L80 57 L100 58 L120 56 L140 57 L160 55 L180 56 L200 54 L220 55 L240 53 L260 54 L280 52 L300 64 Z" fill="rgba(194, 59, 34, 0.1)" stroke="#C23B22" stroke-width="1"></path>
+</svg>
+</div>
+</div>
+</section>
+<!-- Agent Status Bento -->
+<section class="p-4 bento-border bg-neutral-dark/40 rounded">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] font-mono text-neutral-light/50 uppercase tracking-tighter">AI Agent Status</span>
+<h3 class="text-sm font-mono font-bold text-neutral-light">OpenClaw: <span class="text-primary">Idle</span></h3>
+</div>
+<div class="size-3 bg-green-500 rounded-full glow-green"></div>
+</div>
+<div class="mt-3 py-2 border-t border-primary/10 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xs">neurology</span>
+<span class="text-[10px] font-mono text-neutral-light/40">Neural Engine Standby</span>
+</div>
+</section>
+<!-- File Explorer Bento -->
+<section class="flex-1 p-4 bento-border bg-neutral-dark/40 rounded overflow-hidden flex flex-col">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-sm">folder_open</span>
+<h2 class="text-xs font-mono font-bold uppercase tracking-widest text-neutral-light/80">File Explorer</h2>
+</div>
+<div class="flex flex-col gap-3 font-mono text-xs">
+<div class="flex items-center gap-2 text-primary cursor-pointer hover:bg-primary/10 py-1 rounded px-1">
+<span class="material-symbols-outlined text-sm">folder</span>
+<span>knowledge</span>
+</div>
+<div class="flex flex-col gap-2 ml-4 border-l border-primary/20 pl-4">
+<div class="flex items-center gap-2 text-neutral-light/60 hover:text-neutral-light cursor-pointer">
+<span class="material-symbols-outlined text-sm">description</span>
+<span>neural_schema.md</span>
+</div>
+<div class="flex items-center gap-2 text-neutral-light/60 hover:text-neutral-light cursor-pointer">
+<span class="material-symbols-outlined text-sm">description</span>
+<span>system_core.json</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-neutral-light/80 cursor-pointer hover:bg-primary/10 py-1 rounded px-1">
+<span class="material-symbols-outlined text-sm">folder</span>
+<span>workspace</span>
+</div>
+<div class="flex items-center gap-2 text-rust cursor-pointer hover:bg-rust/10 py-1 rounded px-1">
+<span class="material-symbols-outlined text-sm">folder_special</span>
+<span>logs</span>
+</div>
+</div>
+</section>
+</aside>
+<!-- Center Panel: Main Terminal -->
+<section class="flex-1 flex flex-col bento-border bg-neutral-dark/20 rounded relative overflow-hidden">
+<!-- Terminal Header -->
+<div class="flex items-center justify-between px-4 py-2 border-b border-primary/20 bg-background-dark/60">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">terminal</span>
+<h1 class="text-xs font-mono font-bold text-primary">KORA Kernel Shell</h1>
+</div>
+<div class="flex gap-2">
+<div class="size-2 rounded-full border border-primary/40"></div>
+<div class="size-2 rounded-full border border-primary/40"></div>
+<div class="size-2 rounded-full bg-primary/40"></div>
+</div>
+</div>
+<!-- Terminal Output -->
+<div class="flex-1 p-6 terminal-text text-sm overflow-y-auto space-y-4">
+<div class="flex flex-col gap-1">
+<div class="text-neutral-light/40 text-[10px]">TIMESTAMP: 2024-05-21 09:14:22.043</div>
+<div class="text-neutral-light/80">KORA v1.0.4 stable boot sequence...</div>
+<div class="text-primary">Kernel loaded successfully.</div>
+</div>
+<div class="space-y-4">
+<!-- User Prompt -->
+<div class="flex gap-2">
+<span class="text-primary font-bold">kora@root:~$</span>
+<span class="text-neutral-light">kora status</span>
+</div>
+<!-- System Response -->
+<div class="pl-4 border-l-2 border-primary/20">
+<div class="text-neutral-light/60">System Online. All Drivers Loaded.</div>
+<div class="text-neutral-light/60">Network Connectivity: <span class="text-green-500">OPTIMAL</span></div>
+</div>
+<!-- User Prompt -->
+<div class="flex gap-2">
+<span class="text-primary font-bold">kora@root:~$</span>
+<span class="text-neutral-light">Analyze project documentation.</span>
+</div>
+<!-- System Response (Animated-style log) -->
+<div class="pl-4 border-l-2 border-primary/20 space-y-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm animate-spin">progress_activity</span>
+<span class="text-neutral-light/60">Processing...</span>
+</div>
+<div class="text-neutral-light/60">Scanning root directory for /projectDocs...</div>
+<div class="text-primary">Analysis complete: Found 13 files in /projectDocs.</div>
+<div class="text-neutral-light/40 italic">Ready for summarization...</div>
+</div>
+</div>
+<!-- Active Line -->
+<div class="flex gap-2 items-center">
+<span class="text-primary font-bold">kora@root:~$</span>
+<span class="text-neutral-light/20">_</span>
+<span class="cursor animate-[pulse_1s_infinite]"></span>
+</div>
+</div>
+<!-- Input Bar -->
+<div class="p-3 border-t border-primary/10 bg-background-dark/40">
+<div class="flex items-center gap-3 px-3 py-1.5 bg-neutral-dark/60 rounded border border-primary/5">
+<span class="text-primary font-bold text-xs font-mono">&gt;</span>
+<input class="bg-transparent border-none focus:ring-0 text-xs font-mono text-neutral-light placeholder-neutral-light/20 w-full" placeholder="Type a command..." type="text"/>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Status Bar -->
+<footer class="h-8 px-6 bg-background-dark border-t border-primary/20 flex items-center justify-between text-[10px] font-mono uppercase tracking-widest overflow-hidden">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 text-neutral-light/50">
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+<span>Path: ~/projects/kora</span>
+</div>
+<div class="w-px h-3 bg-primary/20"></div>
+<div class="flex items-center gap-2 text-neutral-light/50">
+<span class="material-symbols-outlined text-[14px]">account_tree</span>
+<span>Git: <span class="text-primary">main*</span></span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-neutral-light/40">
+<span>UTF-8</span>
+<span>LN: 42, COL: 12</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary border-l border-r border-primary/20 animate-pulse">
+<div class="size-1.5 bg-primary rounded-full"></div>
+<span class="font-bold">Ready</span>
+</div>
+</div>
+</footer>
+<!-- Image for decorative background pattern -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.03] z-0">
+<div class="w-full h-full bg-[radial-gradient(#d4b235_1px,transparent_1px)] [background-size:20px_20px]" data-alt="Subtle gold grid pattern for background texture"></div>
+</div>
+</body></html>
